@@ -3,7 +3,6 @@ spring:
     name: handoff
   ai:
     google:
-      genai:
         api-key: ${GOOGLE_AI_API_KEY}
         project-id: handoff-project
         chat:
