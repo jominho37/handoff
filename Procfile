@@ -1,1 +1,1 @@
-web: java -jar -Dserver.port=$PORT build/libs/handoff-0.0.1-SNAPSHOT.jar
+web: echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp-credentials.json && GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-credentials.json java -jar -Dserver.port=$PORT build/libs/handoff-0.0.1-SNAPSHOT.jar

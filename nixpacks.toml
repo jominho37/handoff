@@ -2,4 +2,4 @@
 cmds = ["./gradlew clean build -x test"]
 
 [start]
-cmd = "java -jar -Dserver.port=$PORT build/libs/handoff-0.0.1-SNAPSHOT.jar"
+cmd = "echo \"$GOOGLE_APPLICATION_CREDENTIALS_JSON\" > /tmp/gcp-credentials.json && GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-credentials.json java -jar -Dserver.port=$PORT build/libs/handoff-0.0.1-SNAPSHOT.jar"
