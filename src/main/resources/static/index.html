@@ -1,471 +1,545 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>카페 핸드오프 매니저</title>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-    <style>
-        *, *::before, *::after {
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-          -webkit-tap-highlight-color: transparent;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>카페 핸드오프 매니저</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-        :root {
-          --primary: #FF6B1A;
-          --primary-hover: #F25A0A;
-          --primary-soft: #FFF2E8;
-          --bg: #FFFFFF;
-          --bubble-bot: #F2F3F5;
-          --text-primary: #1A1A1A;
-          --text-secondary: #8A8A8A;
-          --text-muted: #B8B8B8;
-          --border: #EFEFEF;
-          --input-bg: #F5F6F8;
-        }
+  :root {
+    --primary: #F88F17;
+    --primary-hover: #DC7B05;
+    --primary-soft: #FEF3E2;
+    --bg: #FFFFFF;
+    --chat-bg: #F2F2F2;
+    --bubble-bot: #FFFFFF;
+    --text-primary: #1A1A1A;
+    --text-muted: #B8B8B8;
+    --avatar-bg: #FFE5C8;
+    --time-on-orange: #FFD4A8;
+  }
 
-        html, body {
-          height: 100%;
-          overflow: hidden;
-        }
+  html, body { height: 100%; overflow: hidden; }
 
-        body {
-          font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
-                       'Malgun Gothic', sans-serif;
-          background: #ECECEC;
-          color: var(--text-primary);
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          letter-spacing: -0.01em;
-        }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+                 'Malgun Gothic', sans-serif;
+    background: #ECECEC;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
 
-        .app {
-          max-width: 480px;
-          margin: 0 auto;
-          height: 100vh;
-          height: 100dvh;
-          display: flex;
-          flex-direction: column;
-          background: var(--bg);
-          position: relative;
-          box-shadow: 0 0 24px rgba(0, 0, 0, 0.04);
-        }
+  .app {
+    max-width: 390px;
+    margin: 0 auto;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.04);
+  }
 
-        /* ---------- Header ---------- */
-        .header {
-          height: 52px;
-          display: flex;
-          align-items: center;
-          padding: 0 8px;
-          flex-shrink: 0;
-          background: var(--bg);
-          position: relative;
-          z-index: 2;
-        }
+  /* ---------- Header ---------- */
+  .header {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    flex-shrink: 0;
+    background: var(--bg);
+    position: relative;
+    z-index: 2;
+  }
 
-        .back-btn {
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: var(--primary);
-          border-radius: 10px;
-          transition: background 0.15s ease;
-        }
-        .back-btn:active { background: var(--primary-soft); }
+  .back-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary);
+    border-radius: 10px;
+    transition: background 0.15s ease;
+  }
+  .back-btn:active { background: var(--primary-soft); }
 
-        /* ---------- Chat area ---------- */
-        .chat {
-          flex: 1;
-          overflow-y: auto;
-          overflow-x: hidden;
-          padding: 8px 16px 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-          scroll-behavior: smooth;
-          overscroll-behavior: contain;
-        }
-        .chat::-webkit-scrollbar { width: 0; height: 0; }
+  /* ---------- Chat area ---------- */
+  .chat {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 16px 16px;
+    background: var(--chat-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+  }
+  .chat::-webkit-scrollbar { width: 0; height: 0; }
 
-        .message {
-          display: flex;
-          flex-direction: column;
-          max-width: 80%;
-          animation: slideIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+  .message { animation: slideIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-        .message.bot { align-self: flex-start; align-items: flex-start; }
-        .message.user { align-self: flex-end; align-items: flex-end; }
+  /* Bot row */
+  .message.bot {
+    align-self: flex-start;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 88%;
+  }
 
-        .bubble {
-          padding: 12px 14px;
-          border-radius: 16px;
-          font-size: 14.5px;
-          line-height: 1.55;
-          word-break: break-word;
-          white-space: pre-wrap;
-          font-weight: 400;
-        }
+  .avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: var(--avatar-bg);
+    margin-top: 2px;
+  }
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 
-        .message.bot .bubble {
-          background: var(--bubble-bot);
-          color: var(--text-primary);
-          border-top-left-radius: 4px;
-        }
+  .message-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    gap: 6px;
+  }
 
-        .message.user .bubble {
-          background: var(--primary);
-          color: #fff;
-          border-top-right-radius: 4px;
-          box-shadow: 0 2px 8px rgba(255, 107, 26, 0.18);
-        }
+  .sender-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.005em;
+    padding: 2px 2px 0;
+    line-height: 1.2;
+  }
 
-        .timestamp {
-          font-size: 11px;
-          color: var(--text-muted);
-          margin-top: 4px;
-          padding: 0 4px;
-          font-weight: 400;
-        }
+  /* User column */
+  .message.user {
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    max-width: 80%;
+  }
 
-        /* Typing indicator */
-        .typing {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          padding: 3px 2px;
-        }
-        .typing span {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #B0B4BA;
-          display: inline-block;
-          animation: blink 1.3s infinite ease-in-out;
-        }
-        .typing span:nth-child(2) { animation-delay: 0.18s; }
-        .typing span:nth-child(3) { animation-delay: 0.36s; }
+  /* Bubble — text + timestamp inside */
+  .bubble {
+    padding: 11px 14px 9px;
+    border-radius: 16px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
 
-        @keyframes blink {
-          0%, 80%, 100% { transform: translateY(0) scale(0.85); opacity: 0.45; }
-          40%           { transform: translateY(-3px) scale(1);  opacity: 1; }
-        }
+  .bubble-text { line-height: 1.55; }
 
-        /* ---------- Input area ---------- */
-        .input-area {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 10px 12px 12px;
-          background: var(--bg);
-          border-top: 1px solid var(--border);
-          flex-shrink: 0;
-        }
+  .bubble-time {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1;
+  }
 
-        .attach-btn {
-          width: 38px;
-          height: 38px;
-          background: none;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--primary);
-          cursor: pointer;
-          flex-shrink: 0;
-          border-radius: 10px;
-          transition: background 0.15s ease;
-        }
-        .attach-btn:active { background: var(--primary-soft); }
+  .message.bot .bubble {
+    background: var(--bubble-bot);
+    color: var(--text-primary);
+    border-top-left-radius: 4px;
+  }
+  .message.bot .bubble-time { color: var(--text-muted); }
 
-        .input-wrap {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          background: var(--input-bg);
-          border-radius: 22px;
-          padding: 0 5px 0 16px;
-          min-height: 42px;
-          transition: background 0.15s ease;
-        }
-        .input-wrap:focus-within { background: #ECEEF1; }
+  .message.user .bubble {
+    background: var(--primary);
+    color: #fff;
+    border-top-right-radius: 4px;
+    box-shadow: 0 2px 8px rgba(248, 143, 23, 0.18);
+  }
+  .message.user .bubble-time { color: var(--time-on-orange); }
 
-        #message-input {
-          flex: 1;
-          border: none;
-          background: transparent;
-          padding: 10px 8px 10px 0;
-          font-size: 14.5px;
-          outline: none;
-          font-family: inherit;
-          color: var(--text-primary);
-          min-width: 0;
-        }
-        #message-input::placeholder { color: #B8B8B8; }
+  /* Typing indicator */
+  .typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 2px;
+  }
+  .typing span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #B0B4BA;
+    display: inline-block;
+    animation: blink 1.3s infinite ease-in-out;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.18s; }
+  .typing span:nth-child(3) { animation-delay: 0.36s; }
 
-        .send-btn {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: none;
-          background: var(--primary);
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          flex-shrink: 0;
-          transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease;
-        }
-        .send-btn:active:not(:disabled) { transform: scale(0.92); background: var(--primary-hover); }
-        .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  @keyframes blink {
+    0%, 80%, 100% { transform: translateY(0) scale(0.85); opacity: 0.45; }
+    40%           { transform: translateY(-3px) scale(1);  opacity: 1; }
+  }
 
-        /* ---------- Tab bar ---------- */
-        .tab-bar {
-          display: flex;
-          border-top: 1px solid var(--border);
-          background: white;
-          flex-shrink: 0;
-          padding-bottom: env(safe-area-inset-bottom);
-        }
+  /* ---------- Input area (single unified white container) ---------- */
+  .input-area {
+    padding: 6px 14px 18px;
+    background: var(--chat-bg);
+    flex-shrink: 0;
+  }
 
-        .tab {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 4px;
-          padding: 9px 0 10px;
-          border: none;
-          background: none;
-          cursor: pointer;
-          color: #9A9A9A;
-          font-size: 11px;
-          font-weight: 500;
-          font-family: inherit;
-          transition: color 0.15s ease;
-        }
-        .tab .icon { width: 24px; height: 24px; display: block; }
-        .tab.active { color: var(--primary); }
-        .tab.active .icon-bg {
-          background: var(--primary);
-          color: #fff;
-          width: 28px;
-          height: 28px;
-          border-radius: 9px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 10px rgba(255, 107, 26, 0.28);
-        }
-        .tab.active .icon-bg .icon { width: 18px; height: 18px; }
-    </style>
+  .input-wrap {
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #DDE0E4;
+    border-radius: 12px;
+    padding: 5px 5px 5px 6px;
+    min-height: 50px;
+    transition: border-color 0.15s ease;
+  }
+  .input-wrap:focus-within { border-color: #C8CCD1; }
+
+  .attach-btn {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 8px;
+    transition: background 0.15s ease;
+  }
+  .attach-btn:active { background: var(--primary-soft); }
+  .attach-btn img { width: 24px; height: 24px; display: block; }
+
+  #message-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 8px;
+    font-size: 14.5px;
+    outline: none;
+    font-family: inherit;
+    color: var(--text-primary);
+    min-width: 0;
+  }
+  #message-input::placeholder { color: #B8B8B8; }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+  .send-btn img { width: 20px; height: 20px; display: block; }
+  .send-btn:active:not(:disabled) { transform: scale(0.94); background: var(--primary-hover); }
+  .send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ---------- Tab bar ---------- */
+  .tab-bar {
+    display: flex;
+    background: white;
+    flex-shrink: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 0 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #9A9A9A;
+    font-size: 11.5px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: color 0.15s ease;
+  }
+
+  .tab .icon-wrap {
+    width: 36px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tab .icon-wrap img,
+  .tab .icon-wrap .icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  .tab.active { color: var(--primary); font-weight: 700; }
+  .tab.active .icon-wrap {
+    background: var(--primary);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(248, 143, 23, 0.28);
+  }
+  .tab.active .icon-wrap img { width: 20px; height: 20px; }
+</style>
 </head>
 <body>
 <div class="app">
-    <!-- Header -->
-    <header class="header">
-        <button class="back-btn" aria-label="뒤로가기">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-    </header>
+  <!-- Header -->
+  <header class="header">
+    <button class="back-btn" aria-label="뒤로가기">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </header>
 
-    <!-- Chat -->
-    <main class="chat" id="chat" role="log" aria-live="polite"></main>
+  <!-- Chat -->
+  <main class="chat" id="chat" role="log" aria-live="polite"></main>
 
-    <!-- Input -->
-    <div class="input-area">
-        <button class="attach-btn" aria-label="이미지 첨부">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="5" width="18" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
-                <circle cx="8.5" cy="10.5" r="1.5" fill="currentColor"/>
-                <path d="M21 17l-5.5-5.5L7 20" stroke="currentColor" stroke-width="1.8"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <div class="input-wrap">
-            <input id="message-input" type="text" placeholder="질문을 입력하세요"
-                   autocomplete="off" enterkeyhint="send" maxlength="500">
-            <button class="send-btn" id="send-btn" aria-label="전송" disabled>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path d="M3.4 11.3l16.5-7.1c1.1-.5 2.2.6 1.7 1.7l-7.1 16.5c-.5 1.1-2 1-2.4-.1l-2.4-6.6-6.6-2.4c-1.1-.4-1.2-1.9-.1-2.4z"
-                          fill="currentColor"/>
-                </svg>
-            </button>
-        </div>
+  <!-- Input area: single white pill containing attach + input + send -->
+  <div class="input-area">
+    <div class="input-wrap">
+      <button class="attach-btn" aria-label="이미지 첨부">
+        <img src="/icons/attach.png" alt="">
+      </button>
+      <input id="message-input" type="text" placeholder="질문을 입력하세요"
+             autocomplete="off" enterkeyhint="send" maxlength="500">
+      <button class="send-btn" id="send-btn" aria-label="전송" disabled>
+        <img src="/icons/send.png" alt="">
+      </button>
     </div>
+  </div>
 
-    <!-- Bottom tabs -->
-    <nav class="tab-bar" aria-label="주요 메뉴">
-        <button class="tab">
-            <svg class="icon" viewBox="0 0 24 24" fill="none">
-                <path d="M5 5h11l3 3v11H5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-                <path d="M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-            </svg>
-            공지
-        </button>
-        <button class="tab">
-            <svg class="icon" viewBox="0 0 24 24" fill="none">
-                <path d="M5 4h9a4 4 0 014 4v12H9a4 4 0 01-4-4V4z" stroke="currentColor"
-                      stroke-width="1.7" stroke-linejoin="round"/>
-                <path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-            </svg>
-            메뉴얼
-        </button>
-        <button class="tab active">
-      <span class="icon-bg">
+  <!-- Bottom tabs -->
+  <nav class="tab-bar" aria-label="주요 메뉴">
+    <button class="tab">
+      <span class="icon-wrap"><img src="/icons/notice.png" alt=""></span>
+      공지
+    </button>
+    <button class="tab">
+      <span class="icon-wrap"><img src="/icons/manual.png" alt=""></span>
+      메뉴얼
+    </button>
+    <button class="tab active">
+      <span class="icon-wrap"><img src="/icons/chatbot.png" alt=""></span>
+      챗봇
+    </button>
+    <button class="tab">
+      <span class="icon-wrap">
         <svg class="icon" viewBox="0 0 24 24" fill="none">
-          <path d="M21 11.5c0 4.1-4 7.5-9 7.5-1.2 0-2.4-.2-3.5-.6L4 20l1.4-3.7C4.5 15 4 13.3 4 11.5 4 7.4 8 4 13 4s8 3.4 8 7.5z"
-                fill="currentColor"/>
+          <circle cx="6" cy="12" r="1.7" fill="currentColor"/>
+          <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
+          <circle cx="18" cy="12" r="1.7" fill="currentColor"/>
         </svg>
       </span>
-            챗봇
-        </button>
-        <button class="tab">
-            <svg class="icon" viewBox="0 0 24 24" fill="none">
-                <circle cx="6" cy="12" r="1.7" fill="currentColor"/>
-                <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
-                <circle cx="18" cy="12" r="1.7" fill="currentColor"/>
-            </svg>
-            더보기
-        </button>
-    </nav>
+      더보기
+    </button>
+  </nav>
 </div>
 
 <script>
-    const chatEl  = document.getElementById('chat');
-    const inputEl = document.getElementById('message-input');
-    const sendBtn = document.getElementById('send-btn');
+  /* ===== 봇 정보 ===== */
+  const BOT_NAME = 'HANDY';
+  const BOT_LOGO = '/handy-logo.png';
 
-    /* ---------- helpers ---------- */
-    function formatTime(date = new Date()) {
-      const h = date.getHours();
-      const m = date.getMinutes().toString().padStart(2, '0');
-      const ampm = h < 12 ? '오전' : '오후';
-      const h12  = h === 0 ? 12 : (h > 12 ? h - 12 : h);
-      return `${ampm} ${h12}:${m}`;
-    }
+  const chatEl  = document.getElementById('chat');
+  const inputEl = document.getElementById('message-input');
+  const sendBtn = document.getElementById('send-btn');
 
-    function scrollToBottom() {
-      requestAnimationFrame(() => {
-        chatEl.scrollTop = chatEl.scrollHeight;
-      });
-    }
+  /* ---------- helpers ---------- */
+  function formatTime(date = new Date()) {
+    const h = date.getHours();
+    const m = date.getMinutes().toString().padStart(2, '0');
+    const ampm = h < 12 ? '오전' : '오후';
+    const h12  = h === 0 ? 12 : (h > 12 ? h - 12 : h);
+    return `${ampm} ${h12}:${m}`;
+  }
 
-    function addMessage(role, text) {
-      const wrap = document.createElement('div');
-      wrap.className = `message ${role}`;
-
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.textContent = text;
-
-      const ts = document.createElement('div');
-      ts.className = 'timestamp';
-      ts.textContent = formatTime();
-
-      wrap.append(bubble, ts);
-      chatEl.appendChild(wrap);
-      scrollToBottom();
-      return wrap;
-    }
-
-    function showTyping() {
-      const wrap = document.createElement('div');
-      wrap.className = 'message bot';
-      wrap.id = 'typing-indicator';
-
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
-
-      wrap.appendChild(bubble);
-      chatEl.appendChild(wrap);
-      scrollToBottom();
-    }
-
-    function hideTyping() {
-      document.getElementById('typing-indicator')?.remove();
-    }
-
-    /* ---------- send ---------- */
-    let pending = false;
-
-    async function sendMessage() {
-      const text = inputEl.value.trim();
-      if (!text || pending) return;
-
-      pending = true;
-      inputEl.value = '';
-      updateSendState();
-
-      addMessage('user', text);
-      showTyping();
-
-      try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text })
-        });
-
-        hideTyping();
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const data = await res.json();
-        const answer = (data && typeof data.answer === 'string' && data.answer.trim())
-          ? data.answer
-          : '죄송해요, 답변을 가져오지 못했어요. 다시 시도해 주세요.';
-        addMessage('bot', answer);
-      } catch (err) {
-        console.error('chat error:', err);
-        hideTyping();
-        addMessage('bot', '⚠️ 서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.');
-      } finally {
-        pending = false;
-        updateSendState();
-        inputEl.focus();
-      }
-    }
-
-    function updateSendState() {
-      sendBtn.disabled = pending || inputEl.value.trim().length === 0;
-    }
-
-    /* ---------- events ---------- */
-    inputEl.addEventListener('input', updateSendState);
-
-    inputEl.addEventListener('keydown', (e) => {
-      // 한글 입력 조합 중에는 Enter를 무시
-      if (e.key === 'Enter' && !e.isComposing && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
+  function scrollToBottom() {
+    requestAnimationFrame(() => {
+      chatEl.scrollTop = chatEl.scrollHeight;
     });
+  }
 
-    sendBtn.addEventListener('click', sendMessage);
+  function createBotShell() {
+    const wrap = document.createElement('div');
+    wrap.className = 'message bot';
 
-    /* ---------- initial bot message ---------- */
-    addMessage('bot', '안녕하세요! 카페 핸드오프 매니저입니다. 레시피나 매장 정보에 대해 무엇이든 물어보세요.');
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    const img = document.createElement('img');
+    img.src = BOT_LOGO;
+    img.alt = BOT_NAME;
+    img.onerror = () => avatar.removeChild(img);
+    avatar.appendChild(img);
+
+    const content = document.createElement('div');
+    content.className = 'message-content';
+
+    const name = document.createElement('div');
+    name.className = 'sender-name';
+    name.textContent = BOT_NAME;
+    content.appendChild(name);
+
+    wrap.appendChild(avatar);
+    wrap.appendChild(content);
+    return { wrap, content };
+  }
+
+  /* Bubble = text + timestamp inside one container */
+  function buildBubble(text, withTimestamp = true) {
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    const textEl = document.createElement('div');
+    textEl.className = 'bubble-text';
+    textEl.textContent = text;
+    bubble.appendChild(textEl);
+
+    if (withTimestamp) {
+      const ts = document.createElement('div');
+      ts.className = 'bubble-time';
+      ts.textContent = formatTime();
+      bubble.appendChild(ts);
+    }
+    return bubble;
+  }
+
+  function addMessage(role, text) {
+    let wrap, target;
+    if (role === 'bot') {
+      ({ wrap, content: target } = createBotShell());
+    } else {
+      wrap = document.createElement('div');
+      wrap.className = 'message user';
+      target = wrap;
+    }
+
+    target.appendChild(buildBubble(text));
+    chatEl.appendChild(wrap);
+    scrollToBottom();
+    return wrap;
+  }
+
+  function showTyping() {
+    const { wrap, content } = createBotShell();
+    wrap.id = 'typing-indicator';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+    content.appendChild(bubble);
+
+    chatEl.appendChild(wrap);
+    scrollToBottom();
+  }
+
+  function hideTyping() {
+    document.getElementById('typing-indicator')?.remove();
+  }
+
+  /* ---------- send ---------- */
+  let pending = false;
+
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text || pending) return;
+
+    pending = true;
+    inputEl.value = '';
+    updateSendState();
+
+    addMessage('user', text);
+    showTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+
+      hideTyping();
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      const answer = (data && typeof data.answer === 'string' && data.answer.trim())
+        ? data.answer
+        : '죄송해요, 답변을 가져오지 못했어요. 다시 시도해 주세요.';
+      addMessage('bot', answer);
+    } catch (err) {
+      console.error('chat error:', err);
+      hideTyping();
+      addMessage('bot', '⚠️ 서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      pending = false;
+      updateSendState();
+      inputEl.focus();
+    }
+  }
+
+  function updateSendState() {
+    sendBtn.disabled = pending || inputEl.value.trim().length === 0;
+  }
+
+  /* ---------- events ---------- */
+  inputEl.addEventListener('input', updateSendState);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.isComposing && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  sendBtn.addEventListener('click', sendMessage);
+
+  /* ---------- initial bot message ---------- */
+  addMessage('bot', '안녕하세요! 카페 핸드오프 매니저입니다. 레시피나 매장 정보에 대해 무엇이든 물어보세요.');
 </script>
 </body>
 </html>
-

@@ -3,3 +3,5 @@ spring:
     google:
       genai:
         api-key: test-dummy-key
+        embedding:
+          api-key: test-dummy-key

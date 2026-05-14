@@ -6,6 +6,7 @@ spring:
     name: handoff
   ai:
     google:
+      genai:
         api-key: ${GOOGLE_AI_API_KEY}
         project-id: handoff-project
         chat:
@@ -16,4 +17,4 @@ spring:
           api-key: ${GOOGLE_AI_API_KEY}
           project-id: handoff-project
           options:
-            model:  gemini-embedding-2
+            model: gemini-embedding-2
