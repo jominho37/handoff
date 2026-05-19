@@ -7,6 +7,8 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;
 
+import com.chatbot.handoff.service.SemanticCacheService.CacheResult;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,17 +28,26 @@ public class AiService {
 
     private final ChatClient chatClient;
     private final VectorService vectorService;
+    private final SemanticCacheService semanticCacheService;
 
     public String generateAnswer(String userQuery) {
+        CacheResult cacheResult = semanticCacheService.lookup(userQuery);
+        if (cacheResult.isHit()) {
+            return cacheResult.answer();
+        }
+
         List<Document> docs = vectorService.search(userQuery);
         String context = docs.stream()
                 .map(Document::getText)
                 .collect(Collectors.joining("\n\n"));
 
-        return chatClient.prompt()
+        String answer = chatClient.prompt()
                 .system(SYSTEM_PROMPT)
                 .user(String.format("[Context]\n%s\n\n[질문]\n%s", context, userQuery))
                 .call()
                 .content();
+
+        semanticCacheService.cacheAnswer(cacheResult.embedding(), answer);
+        return answer;
     }
 }
